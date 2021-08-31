@@ -141,9 +141,15 @@ function love.update(dt)
         ball.dy = math.random(-50, 50)
         if servingPlayer == 1 then
             ball.dx = math.random(140, 200)
+            player2.incoming = true
+            player1.incoming = false
         else
             ball.dx = -math.random(140, 200)
+            player1.incoming = true
+            player2.incoming = false
         end
+        player1.margin = math.random(8)
+        player1.speed_multiplier = math.random(5,12)/10 -- calculate speed multiplier once per exchange
     elseif gameState == 'play' then
         -- detect ball collision with paddles, reversing dx if true and
         -- slightly increasing it, then altering the dy based on the position
@@ -159,6 +165,9 @@ function love.update(dt)
                 ball.dy = math.random(10, 150)
             end
 
+            player2.incoming = true
+            player1.incoming = false
+
             sounds['paddle_hit']:play()
         end
         if ball:collides(player2) then
@@ -172,6 +181,9 @@ function love.update(dt)
                 ball.dy = math.random(10, 150)
             end
 
+            player1.incoming = true
+            player2.incoming = false
+            
             sounds['paddle_hit']:play()
         end
 
@@ -230,17 +242,21 @@ function love.update(dt)
     end
 
     --
-    -- paddles can move no matter what state we're in
+    -- player1 (AI) active
+    -- player2 paddle can move no matter what state we're in
     --
     -- player 1
-    if love.keyboard.isDown('w') then
-        player1.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('s') then
-        player1.dy = PADDLE_SPEED
+    -- The speed multiplier randomized per each server, to give slow/fast reaction speeds to the AI paddle.
+	-- player1.incoming was used here in the if statement for player 1. Removed it for it to move at all times.
+    
+    if ball.y < player1.y - player1.margin then
+        player1.dy = -PADDLE_SPEED * player1.speed_multiplier
+    elseif ball.y > player1.y + player1.margin then
+        player1.dy = PADDLE_SPEED * player1.speed_multiplier
     else
         player1.dy = 0
     end
-
+    
     -- player 2
     if love.keyboard.isDown('up') then
         player2.dy = -PADDLE_SPEED
@@ -255,7 +271,7 @@ function love.update(dt)
     if gameState == 'play' then
         ball:update(dt)
     end
-
+    
     player1:update(dt)
     player2:update(dt)
 end
@@ -340,7 +356,7 @@ function love.draw()
     ball:render()
 
     -- display FPS for debugging; simply comment out to remove
-    displayFPS()
+    -- displayFPS()
 
     -- end our drawing to push
     push:apply('end')

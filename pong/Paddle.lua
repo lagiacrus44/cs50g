@@ -32,6 +32,10 @@ function Paddle:init(x, y, width, height)
     self.width = width
     self.height = height
     self.dy = 0
+    self.incoming = false -- incoming was being used to move only when ball was incoming to the paddle. Removed usage to move at all times.
+    self.margin = 5 -- Margin for y coordinate to consider when AI paddle chases the ball. This prevents the paddle from flickering trying to center its y coordinate with the ball.
+    --margin is randomized at each serve as well. Similar to a buffer, to not consider the exact coordinate to move.
+    self.speed_multiplier = 1
 end
 
 function Paddle:update(dt)
