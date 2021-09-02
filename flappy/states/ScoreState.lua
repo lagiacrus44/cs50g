@@ -26,12 +26,37 @@ function ScoreState:update(dt)
 end
 
 function ScoreState:render()
+    local medal = nil
+    local y_position = 100
+    if self.score > 0 then
+        medal = love.graphics.newImage(getMedal(self.score))
+    end
     -- simply render the score to the middle of the screen
     love.graphics.setFont(flappyFont)
-    love.graphics.printf('Oof! You lost!', 0, 64, VIRTUAL_WIDTH, 'center')
+    love.graphics.printf('Oof! You lost!', 0, 50, VIRTUAL_WIDTH, 'center')
 
     love.graphics.setFont(mediumFont)
-    love.graphics.printf('Score: ' .. tostring(self.score), 0, 100, VIRTUAL_WIDTH, 'center')
+    if medal then
+        love.graphics.printf('But you won this medal!', 0, y_position, VIRTUAL_WIDTH, 'center')
+        love.graphics.draw(medal,VIRTUAL_WIDTH/2-medal:getWidth()/8,y_position+25,0,0.25,0.25)
+        y_position = y_position + 110
+    else
+        love.graphics.printf('Try to score at least 1 :)', 0, y_position, VIRTUAL_WIDTH, 'center')
+        y_position = y_position + 50
+    end
 
-    love.graphics.printf('Press Enter to Play Again!', 0, 160, VIRTUAL_WIDTH, 'center')
+    love.graphics.printf('Score: ' .. tostring(self.score), 0, y_position, VIRTUAL_WIDTH, 'center')
+
+    love.graphics.printf('Press Enter to Play Again!', 0, y_position+30, VIRTUAL_WIDTH, 'center')
+end
+
+function getMedal(score)
+    if score < 2 then
+        return 'bronze.png'
+    elseif score < 3 then
+        return 'silver.png'
+    else
+        return 'gold.png'
+    end
+    return 1
 end
