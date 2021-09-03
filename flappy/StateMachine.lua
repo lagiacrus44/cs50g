@@ -70,6 +70,7 @@ function StateMachine:unpause(stateName, enterParams)
 	sounds['music']:play()
 	self.current:exit()
 	self.current = self.saved
+	self.saved = self.empty -- discard previously saved state, after resumption
 	self.current:enter(enterParams)
 end
 
