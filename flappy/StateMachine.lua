@@ -59,6 +59,7 @@ end
 function StateMachine:pause(stateName, enterParams)
 	assert(self.states[stateName]) -- state must exist!
 	--self.current:exit()
+	sounds['music']:pause()
 	self.saved = self.current
 	self.current = self.states[stateName]()
 	self.current:enter(enterParams)
@@ -66,6 +67,7 @@ end
 
 function StateMachine:unpause(stateName, enterParams)
 	assert(self.states[stateName]) -- state must exist!
+	sounds['music']:play()
 	self.current:exit()
 	self.current = self.saved
 	self.current:enter(enterParams)
