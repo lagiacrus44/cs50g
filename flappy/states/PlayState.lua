@@ -28,6 +28,16 @@ function PlayState:init()
     self.lastY = -PIPE_HEIGHT + math.random(80) + 20
 end
 
+function PlayState:enter(params)
+    self.bird = params.bird
+    self.pipePairs = params.pipePairs
+    love.graphics.printf(params.bird.y,0,120,VIRTUAL_WIDTH,'center')
+    self.timer = params.timer
+    self.spawnInterval = params.spawnInterval
+    self.score = params.score
+    self.lastY = params.lastY
+end
+
 function PlayState:update(dt)
     -- update timer for pipe spawning
     self.timer = self.timer + dt
@@ -103,6 +113,12 @@ function PlayState:update(dt)
             score = self.score
         })
     end
+
+    if love.keyboard.wasPressed('p') then
+        sounds['pause1']:play()
+        gStateMachine:pause('pause')
+    end
+
 end
 
 function PlayState:render()

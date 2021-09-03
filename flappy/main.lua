@@ -35,6 +35,7 @@ require 'StateMachine'
 -- all states our StateMachine can transition between
 require 'states/BaseState'
 require 'states/CountdownState'
+require 'states/PauseState'
 require 'states/PlayState'
 require 'states/ScoreState'
 require 'states/TitleScreenState'
@@ -87,7 +88,9 @@ function love.load()
         ['score'] = love.audio.newSource('score.wav', 'static'),
 
         -- https://freesound.org/people/xsgianni/sounds/388079/
-        ['music'] = love.audio.newSource('marios_way.mp3', 'static')
+        ['music'] = love.audio.newSource('marios_way.mp3', 'static'),
+        ['pause1'] = love.audio.newSource('pause_1.wav', 'static'),
+        ['pause2'] = love.audio.newSource('pause_2.wav','static')
     }
 
     -- kick off music
@@ -105,6 +108,7 @@ function love.load()
     gStateMachine = StateMachine {
         ['title'] = function() return TitleScreenState() end,
         ['countdown'] = function() return CountdownState() end,
+        ['pause'] = function() return PauseState() end,
         ['play'] = function() return PlayState() end,
         ['score'] = function() return ScoreState() end
     }
