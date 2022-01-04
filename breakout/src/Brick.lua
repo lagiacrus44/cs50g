@@ -50,7 +50,7 @@ paletteColors = {
     }
 }
 
-function Brick:init(x, y)
+function Brick:init(x, y, key)
     -- used for coloring and score calculation
     self.tier = 0
     self.color = 1
@@ -59,6 +59,7 @@ function Brick:init(x, y)
     self.y = y
     self.width = 32
     self.height = 16
+    self.key = key -- only true when it's a key block
     
     -- used to determine whether this brick should be rendered
     self.inPlay = true
@@ -78,6 +79,12 @@ function Brick:init(x, y)
 
     -- spread of particles; normal looks more natural than uniform
     self.psystem:setEmissionArea('normal', 10, 10)
+
+    self.powerUp = nil
+end
+
+function Brick:addPowerUp(powerUp)
+    self.powerUp = powerUp
 end
 
 --[[
@@ -117,6 +124,11 @@ function Brick:hit()
         -- if we're in the first tier and the base color, remove brick from play
         if self.color == 1 then
             self.inPlay = false
+            -- if brick contained a power-up, show it now and set positive dy.
+            if self.powerUp ~= nil then
+                self.powerUp.inPlay = true
+                self.powerUp.dy = 75
+            end
         else
             self.color = self.color - 1
         end
@@ -131,15 +143,27 @@ end
 
 function Brick:update(dt)
     self.psystem:update(dt)
+    if self.powerUp ~= nil then
+        self.powerUp:update(dt)
+    end 
 end
 
 function Brick:render()
     if self.inPlay then
-        love.graphics.draw(gTextures['main'], 
+        if self.key then
+            love.graphics.draw(gTextures['main'], gFrames['bricks'][22],
+            self.x, self.y)
+        else
+            love.graphics.draw(gTextures['main'], 
             -- multiply color by 4 (-1) to get our color offset, then add tier to that
             -- to draw the correct tier and color brick onto the screen
             gFrames['bricks'][1 + ((self.color - 1) * 4) + self.tier],
             self.x, self.y)
+        end
+    else
+        if self.powerUp ~= nil then
+            self.powerUp:render()
+        end
     end
 end
 

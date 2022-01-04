@@ -29,6 +29,8 @@ function ServeState:enter(params)
     -- init new ball (random color for fun)
     self.ball = Ball()
     self.ball.skin = math.random(7)
+    
+    self.powerUp = params.powerUp
 end
 
 function ServeState:update(dt)

@@ -27,6 +27,7 @@ function PlayState:enter(params)
     self.score = params.score
     self.highScores = params.highScores
     self.ball = params.ball
+    self.powerUpBalls = nil
     self.level = params.level
 
     self.recoverPoints = 5000
@@ -162,6 +163,17 @@ function PlayState:update(dt)
             -- only allow colliding with one brick, for corners
             break
         end
+
+        if brick.powerUp ~= nil and brick.powerUp.inPlay and brick.powerUp:collides(self.paddle) then
+            -- Activate power-up, play sound
+            if brick.powerUp.key then
+                -- Key power up    
+            else
+                -- Ball power up
+            end
+            brick.powerUp.inPlay = false
+        end
+
     end
 
     -- if ball goes below bounds, revert to serve state and decrease health

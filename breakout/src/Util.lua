@@ -49,13 +49,19 @@ function table.slice(tbl, first, last, step)
     return sliced
 end
 
+function table.pick(tbl, key)
+    return tbl[key]
+end
+
 --[[
     This function is specifically made to piece out the bricks from the
     sprite sheet. Since the sprite sheet has non-uniform sprites within,
     we have to return a subset of GenerateQuads.
 ]]
 function GenerateQuadsBricks(atlas)
-    return table.slice(GenerateQuads(atlas, 32, 16), 1, 21)
+    local result = table.slice(GenerateQuads(atlas, 32, 16), 1, 21)
+    result[#result+1] = table.pick(GenerateQuads(atlas, 32, 16), 24)
+    return result
 end
 
 --[[
@@ -120,6 +126,26 @@ function GenerateQuadsBalls(atlas)
     for i = 0, 2 do
         quads[counter] = love.graphics.newQuad(x, y, 8, 8, atlas:getDimensions())
         x = x + 8
+        counter = counter + 1
+    end
+
+    return quads
+end
+
+--[[
+    This function is specifically made to piece out the power-ups from the
+    sprite sheet. This corresponds to the last row in the sheet, each power-up is 16x16 px.
+]]
+function GenerateQuadsPowerUps(atlas)
+    local x = 0
+    local y = 192
+    
+    local counter = 1
+    local quads = {}
+
+    for i = 0, 9 do
+        quads[counter] = love.graphics.newQuad(x,y, 16,16, atlas:getDimensions())
+        x = x + 16
         counter = counter + 1
     end
 

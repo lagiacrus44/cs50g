@@ -84,15 +84,18 @@ function LevelMaker.createMap(level)
                 skipFlag = not skipFlag
             end
 
+            local xCoord = -- x-coordinate
+            (x-1)                   -- decrement x by 1 because tables are 1-indexed, coords are 0
+            * 32                    -- multiply by 32, the brick width
+            + 8                     -- the screen should have 8 pixels of padding; we can fit 13 cols + 16 pixels total
+            + (13 - numCols) * 16   -- left-side padding for when there are fewer than 13 columns
+
+            local yCoord = -- y-coordinate
+            y * 16                  -- just use y * 16, since we need top padding anyway
+
             b = Brick(
-                -- x-coordinate
-                (x-1)                   -- decrement x by 1 because tables are 1-indexed, coords are 0
-                * 32                    -- multiply by 32, the brick width
-                + 8                     -- the screen should have 8 pixels of padding; we can fit 13 cols + 16 pixels total
-                + (13 - numCols) * 16,  -- left-side padding for when there are fewer than 13 columns
-                
-                -- y-coordinate
-                y * 16                  -- just use y * 16, since we need top padding anyway
+                xCoord,
+                yCoord
             )
 
             -- if we're alternating, figure out which color/tier we're on
@@ -119,9 +122,50 @@ function LevelMaker.createMap(level)
         end
     end 
 
+    bricks = LevelMaker.addPowerUps(bricks, level)
+
     -- in the event we didn't generate any bricks, try again
     if #bricks == 0 then
         return self.createMap(level)
+    else
+        return bricks
+    end
+end
+
+function LevelMaker.addPowerUps(bricks, level)
+    local newBricks
+    local addedPowerUps = 0
+    local brickAmount = #bricks
+    -- Level-proportional amount of power-ups per map. Higher level means more power-ups. No higher than 16.
+    local puAmount = math.min(brickAmount/math.random(2,4), level*8)
+    
+    local bricksToUse = {}
+    for i = 1, puAmount, 1 do
+        bricksToUse[i] = math.random(brickAmount)
+    end
+
+    for i = 1, puAmount, 1 do
+        local brickIndex = bricksToUse[i]
+        p = PowerUp(bricks[brickIndex].x, bricks[brickIndex].y)
+        bricks[brickIndex]:addPowerUp(p)
+        addedPowerUps = addedPowerUps + 1
+        --table.insert(poweredBricks, p)
+    end
+
+    print('Added power ups: ' .. addedPowerUps)
+
+    local keyBrickIndex = math.random(1, brickAmount)
+    local keyPowerUpIndex = math.random(1, brickAmount)
+    while keyPowerUpIndex == keyBrickIndex do
+        keyPowerUpIndex = math.random(1, brickAmount) -- to prevent setting the only key power up in the same key brick.
+    end
+
+    bricks[keyBrickIndex].key = true
+    keyPowerUp = PowerUp(bricks[keyPowerUpIndex].x, bricks[keyPowerUpIndex].y, true)
+    bricks[keyPowerUpIndex]:addPowerUp(keyPowerUp)
+
+    if addedPowerUps == 0 then
+        return self.addPowerUps(bricks, level)
     else
         return bricks
     end
