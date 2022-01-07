@@ -30,8 +30,11 @@ function Paddle:init(skin)
     self.dx = 0
 
     -- starting dimensions
-    self.width = 64
-    self.height = 16
+    self.initialWidth = 32
+    self.initialHeight = 16
+
+    self.width = self.initialWidth
+    self.height = self.initialHeight
 
     -- the skin only has the effect of changing our color, used to offset us
     -- into the gPaddleSkins table later
@@ -40,6 +43,12 @@ function Paddle:init(skin)
     -- the variant is which of the four paddle sizes we currently are; 2
     -- is the starting size, as the smallest is too tough to start with
     self.size = 2
+end
+
+function Paddle:resize(size)
+    self.size = size
+    self.width = self.initialWidth * size
+    print(self.width)
 end
 
 function Paddle:update(dt)

@@ -165,7 +165,7 @@ function LevelMaker.addPowerUps(bricks, level)
     bricks[keyPowerUpIndex]:addPowerUp(keyPowerUp)
 
     if addedPowerUps == 0 then
-        return self.addPowerUps(bricks, level)
+        return LevelMaker.addPowerUps(bricks, level)
     else
         return bricks
     end

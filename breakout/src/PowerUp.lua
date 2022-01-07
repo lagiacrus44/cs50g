@@ -48,6 +48,8 @@ function PowerUp:collides(target)
         return false
     end
 
+    --TODO add power up sound here.
+    
     return true
 end
 
