@@ -35,6 +35,9 @@ function ServeState:enter(params)
     if self.level > 1 then
         self.startingPaddleSize = 1
     end
+    self.paddle:resize(self.startingPaddleSize)
+
+    self.paddleUpgradePoints = self.score + 1000
 end
 
 function ServeState:update(dt)
@@ -55,7 +58,8 @@ function ServeState:update(dt)
             level = self.level,
             recoverPoints = self.recoverPoints,
             keyObtained = self.keyObtained,
-            startingPaddleSize = self.startingPaddleSize
+            startingPaddleSize = self.startingPaddleSize,
+            paddleUpgradePoints = self.paddleUpgradePoints
         })
     end
 

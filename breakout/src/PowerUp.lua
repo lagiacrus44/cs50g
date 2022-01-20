@@ -48,7 +48,11 @@ function PowerUp:collides(target)
         return false
     end
 
-    --TODO add power up sound here.
+    if self.key then
+        gSounds['key-powerup']:play()
+    else
+        gSounds['ball-powerup']:play()
+    end
 
     return true
 end

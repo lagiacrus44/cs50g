@@ -30,7 +30,6 @@ function PlayState:enter(params)
     self.balls = {}
     self.level = params.level
     self.startingPaddleSize = params.startingPaddleSize
-    self.paddle:resize(self.startingPaddleSize)
 
     self.recoverPoints = 5000
 
@@ -40,8 +39,8 @@ function PlayState:enter(params)
     
     table.insert(self.balls, self.ball)
 
-    self.paddleUpgradePoints = 1000 --this will auto re-initialize every time we enter the play state.
     self.keyObtained = params.keyObtained
+    self.paddleUpgradePoints = params.paddleUpgradePoints
 end
 
 PENDING_POWERUP = false
@@ -66,7 +65,7 @@ function PlayState:update(dt)
 
         if ball:collides(self.paddle) then
             -- raise ball above paddle in case it goes below it, then reverse dy
-            ball.y = self.paddle.y - 12
+            ball.y = self.paddle.y - 8
             ball.dy = -self.ball.dy
     
             --
@@ -95,10 +94,14 @@ function PlayState:update(dt)
                 self.score = self.score + (brick.tier * 200 + brick.color * 25)
 
                 -- trigger the brick's hit function, which removes it from play
-                if brick.key and self.keyObtained then
-                    brick:hit()
-                    if brick.inPlay == false then
-                        self.keyObtained = false
+                if brick.key then 
+                    if self.keyObtained then
+                        brick:hit()
+                        if brick.inPlay == false then
+                            self.keyObtained = false
+                        end
+                    else
+                        gSounds['wall-hit']:play()
                     end
                 elseif not brick.key then
                     brick:hit()

@@ -127,7 +127,7 @@ function Brick:hit()
             -- if brick contained a power-up, show it now and set positive dy.
             if self.powerUp ~= nil then
                 self.powerUp.inPlay = true
-                self.powerUp.dy = 75
+                self.powerUp.dy = 100
             end
         else
             self.color = self.color - 1
