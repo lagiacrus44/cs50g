@@ -49,7 +49,7 @@ function PowerUp:collides(target)
     end
 
     --TODO add power up sound here.
-    
+
     return true
 end
 

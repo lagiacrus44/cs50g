@@ -29,10 +29,7 @@ function PlayState:enter(params)
     self.ball = params.ball -- keep single ball in params to avoid changing other states and always start with just one ball.
     self.balls = {}
     self.level = params.level
-    self.startingPaddleSize = 2
-    if self.level > 1 then
-        self.startingPaddleSize = 1
-    end
+    self.startingPaddleSize = params.startingPaddleSize
     self.paddle:resize(self.startingPaddleSize)
 
     self.recoverPoints = 5000
@@ -47,6 +44,7 @@ function PlayState:enter(params)
     self.keyObtained = params.keyObtained
 end
 
+PENDING_POWERUP = false
 function PlayState:update(dt)
     if self.paused then
         if love.keyboard.wasPressed('space') then
@@ -97,7 +95,12 @@ function PlayState:update(dt)
                 self.score = self.score + (brick.tier * 200 + brick.color * 25)
 
                 -- trigger the brick's hit function, which removes it from play
-                if (brick.key and self.keyObtained) or not brick.key then
+                if brick.key and self.keyObtained then
+                    brick:hit()
+                    if brick.inPlay == false then
+                        self.keyObtained = false
+                    end
+                elseif not brick.key then
                     brick:hit()
                 end
 
@@ -195,14 +198,20 @@ function PlayState:update(dt)
                     if brick.powerUp.key then
                         -- Key power up
                         self.keyObtained = true
+                        brick.powerUp.inPlay = false
                     else
                         -- Ball power up
-                        local powerBall1 = Ball(ball.x+4, ball.y, ball.dx+2, ball.dy) 
-                        local powerBall2 = Ball(ball.x-4, ball.y, ball.dx-2, ball.dy) 
-                        table.insert(self.balls, powerBall1)
-                        table.insert(self.balls, powerBall2)
+                        PENDING_POWERUP = true
+                        if PENDING_POWERUP and ball.inPlay then
+                            local powerBall1 = Ball(ball.x+4, ball.y, ball.dx+2, ball.dy) 
+                            local powerBall2 = Ball(ball.x-4, ball.y, ball.dx-2, ball.dy) 
+                            table.insert(self.balls, powerBall1)
+                            table.insert(self.balls, powerBall2)
+                            
+                            brick.powerUp.inPlay = false
+                            PENDING_POWERUP = false
+                        end
                     end
-                    brick.powerUp.inPlay = false
                 elseif brick.powerUp.key and brick.powerUp.y >= VIRTUAL_HEIGHT then
                     --if key power up is lost, game is over. There would be no way to win.
                     gStateMachine:change('game-over', {
@@ -239,7 +248,8 @@ function PlayState:update(dt)
                 score = self.score,
                 highScores = self.highScores,
                 level = self.level,
-                recoverPoints = self.recoverPoints
+                recoverPoints = self.recoverPoints,
+                keyObtained = self.keyObtained
             })
         end
     end

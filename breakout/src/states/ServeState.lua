@@ -31,6 +31,10 @@ function ServeState:enter(params)
     self.ball.skin = math.random(7)
     
     self.keyObtained = params.keyObtained
+    self.startingPaddleSize = 2
+    if self.level > 1 then
+        self.startingPaddleSize = 1
+    end
 end
 
 function ServeState:update(dt)
@@ -50,7 +54,8 @@ function ServeState:update(dt)
             ball = self.ball,
             level = self.level,
             recoverPoints = self.recoverPoints,
-            keyObtained = self.keyObtained
+            keyObtained = self.keyObtained,
+            startingPaddleSize = self.startingPaddleSize
         })
     end
 
@@ -69,6 +74,10 @@ function ServeState:render()
 
     renderScore(self.score)
     renderHealth(self.health)
+
+    if self.keyObtained then
+        love.graphics.draw(gTextures['main'], gFrames['powerups'][10], 5, 15)
+    end
 
     love.graphics.setFont(gFonts['large'])
     love.graphics.printf('Level ' .. tostring(self.level), 0, VIRTUAL_HEIGHT / 3,
